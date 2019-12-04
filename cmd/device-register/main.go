@@ -223,3 +223,5 @@ func reregister(args Args) error {
 	log.Printf("reregister with name '%s' and group '%s'", args.Name, args.Group)
 	return apiClient.Reregister(args.Name, args.Group, args.Password)
 }
+
+// clare change
