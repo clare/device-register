@@ -39,8 +39,7 @@ const (
 	apiURL                  = "https://api.cacophony.org.nz"
 	testAPIURL              = "https://api-test.cacophony.org.nz"
 	minionIDFile            = "/etc/salt/minion_id"
-	deviceConfigFile        = "/etc/cacophony/device.yaml"
-	devicePrivateConfigFile = "/etc/cacophony/device-priv.yaml"
+	deviceConfigFile        = "/etc/cacophony/config.toml"
 	minionIDPrefix          = "pi-"
 	minionIDTestPrefix      = "pi-test-"
 )
@@ -143,6 +142,8 @@ func register(args Args) error {
 		}
 	}
 
+	createIfNotExist(deviceConfigFile)
+
 	apiClient, err := api.Register(args.Name, args.Password, args.Group, apiString)
 	if err != nil {
 		return err
@@ -180,10 +181,14 @@ func writeToMinionIDFile(name string) error {
 }
 
 func deleteDeviceConfigFiles() error {
-	if err := removeFileIfExist(deviceConfigFile); err != nil {
-		return err
-	}
-	if err := removeFileIfExist(devicePrivateConfigFile); err != nil {
+	return removeFileIfExist(deviceConfigFile);
+}
+
+func createIfNotExist(path string) error {
+	var _, err = os.Stat(path)
+	if (os.IsNotExist(err)) {
+		var file, err = os.Create(path)
+		defer file.Close()
 		return err
 	}
 	return nil
